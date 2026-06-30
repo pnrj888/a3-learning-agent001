@@ -740,11 +740,14 @@ def render_voice_input(input_key: str, placeholder: str = "输入内容...") -> 
             for (let i = event.resultIndex; i < event.results.length; i++) {{
                 transcript += event.results[i][0].transcript;
             }}
-            const input = document.querySelector('input[data-testid="stTextInput"]');
-            if (input) {{
-                input.value = transcript;
-                input.dispatchEvent(new Event('input', {{ bubbles: true }}));
-                input.dispatchEvent(new Event('change', {{ bubbles: true }}));
+            const inputs = document.querySelectorAll('input[data-testid="stTextInput"]');
+            for (const input of inputs) {{
+                if (input.getAttribute('aria-label') === '') {{
+                    input.value = transcript;
+                    input.dispatchEvent(new Event('input', {{ bubbles: true }}));
+                    input.dispatchEvent(new Event('change', {{ bubbles: true }}));
+                    break;
+                }}
             }}
         }};
         
@@ -776,22 +779,23 @@ def render_voice_input(input_key: str, placeholder: str = "输入内容...") -> 
     </script>
     """
     
-    st.markdown(f"""
-    <div style="display:flex;align-items:center;gap:8px;background:white;border-radius:14px;padding:6px;
-        border:1.5px solid {ColorTokens.CARD_BORDER};margin-bottom:12px;">
+    col_mic, col_input = st.columns([1, 6])
+    with col_mic:
+        st.markdown(f"""
         <button id="voice-btn-{input_key}" 
             style="width:44px;height:44px;border-radius:12px;background:#F3F4F6;border:none;
-                font-size:18px;cursor:pointer;transition:all .25s;flex-shrink:0;">
+                font-size:18px;cursor:pointer;transition:all .25s;width:100%;">
             🎤
         </button>
-        <div style="flex:1;">
-            {st.text_input("", key=input_key, placeholder=placeholder, label_visibility="collapsed")}
-        </div>
-    </div>
+        """, unsafe_allow_html=True)
+    with col_input:
+        user_input = st.text_input("", key=input_key, placeholder=placeholder, label_visibility="collapsed")
+    
+    st.markdown(f"""
     <div id="voice-status-{input_key}" style="font-size:10px;color:{ColorTokens.LIGHT_GRAY};margin-top:-8px;margin-bottom:8px;">
         点击麦克风开始说话
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown(VOICE_INPUT_JS, unsafe_allow_html=True)
-    return st.session_state[input_key]
+    return user_input
