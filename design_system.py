@@ -690,3 +690,111 @@ def format_timestamp(iso_str: str) -> str:
         return dt.strftime("%Y-%m-%d %H:%M")
     except:
         return iso_str
+
+
+def render_voice_input(input_key: str, placeholder: str = "输入内容...") -> str:
+    """语音转文字输入组件 - 使用浏览器Web Speech API"""
+    if input_key not in st.session_state:
+        st.session_state[input_key] = ""
+    
+    VOICE_INPUT_JS = f"""
+    <script>
+    (function() {{
+        const recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!recognition) {{
+            document.getElementById('voice-status-{input_key}').textContent = '浏览器不支持语音识别';
+            return;
+        }}
+        
+        const rec = new recognition();
+        rec.continuous = false;
+        rec.interimResults = true;
+        rec.lang = 'zh-CN';
+        
+        const voiceBtn = document.getElementById('voice-btn-{input_key}');
+        const status = document.getElementById('voice-status-{input_key}');
+        let isRecording = false;
+        
+        voiceBtn.addEventListener('click', function() {{
+            if (isRecording) {{
+                rec.stop();
+                isRecording = false;
+                voiceBtn.style.background = '#F3F4F6';
+                voiceBtn.style.color = '#6B7280';
+                voiceBtn.textContent = '🎤';
+                status.textContent = '点击麦克风开始说话';
+                status.style.color = '#9CA3AF';
+            }} else {{
+                rec.start();
+                isRecording = true;
+                voiceBtn.style.background = '#EF4444';
+                voiceBtn.style.color = 'white';
+                voiceBtn.textContent = '⏹️';
+                status.textContent = '正在聆听...请说话';
+                status.style.color = '#EF4444';
+            }}
+        }});
+        
+        rec.onresult = function(event) {{
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {{
+                transcript += event.results[i][0].transcript;
+            }}
+            const input = document.querySelector('input[data-testid="stTextInput"]');
+            if (input) {{
+                input.value = transcript;
+                input.dispatchEvent(new Event('input', {{ bubbles: true }}));
+                input.dispatchEvent(new Event('change', {{ bubbles: true }}));
+            }}
+        }};
+        
+        rec.onerror = function(event) {{
+            isRecording = false;
+            voiceBtn.style.background = '#F3F4F6';
+            voiceBtn.style.color = '#6B7280';
+            voiceBtn.textContent = '🎤';
+            if (event.error === 'not-allowed') {{
+                status.textContent = '请允许麦克风权限';
+                status.style.color = '#EF4444';
+            }} else {{
+                status.textContent = '语音识别出错: ' + event.error;
+                status.style.color = '#EF4444';
+            }}
+        }};
+        
+        rec.onend = function() {{
+            if (isRecording) {{
+                isRecording = false;
+                voiceBtn.style.background = '#F3F4F6';
+                voiceBtn.style.color = '#6B7280';
+                voiceBtn.textContent = '🎤';
+                status.textContent = '点击麦克风开始说话';
+                status.style.color = '#9CA3AF';
+            }}
+        }};
+    }})();
+    </script>
+    """
+    
+    st.markdown(f"""
+    <div style="display:flex;align-items:center;gap:8px;background:white;border-radius:14px;padding:6px;
+        border:1.5px solid {ColorTokens.CARD_BORDER};margin-bottom:12px;">
+        <button id="voice-btn-{input_key}" 
+            style="width:44px;height:44px;border-radius:12px;background:#F3F4F6;border:none;
+                font-size:18px;cursor:pointer;transition:all .25s;flex-shrink:0;">
+            🎤
+        </button>
+        <div style="flex:1;">
+            {st.text_input("", key=input_key, placeholder=placeholder, label_visibility="collapsed")}
+        </div>
+    </div>
+    <div id="voice-status-{input_key}" style="font-size:10px;color:{ColorTokens.LIGHT_GRAY};margin-top:-8px;margin-bottom:8px;">
+        点击麦克风开始说话
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown(VOICE_INPUT_JS, unsafe_allow_html=True)
+    return st.session_state[input_key]
+        return dt.strftime("%Y-%m-%d %H:%M")
+    except:
+        return iso_str

@@ -2398,23 +2398,12 @@ def render_qa_page():
     st.markdown('</div>', unsafe_allow_html=True)
 
     # ── Bottom Input Bar ──
-    st.markdown(f"""
-    <div style="background:white;border-radius:14px;padding:6px;border:1.5px solid {ColorTokens.CARD_BORDER};
-        display:flex;align-items:center;gap:8px;margin-bottom:12px;transition:all .25s;"
-        id="qaInputWrap">
-        <div style="width:40px;height:40px;border-radius:10px;background:{ColorTokens.BG_GRAY};
-            display:flex;align-items:center;justify-content:center;font-size:16px;
-            flex-shrink:0;cursor:pointer;transition:all .2s;">🎤</div>
-    """, unsafe_allow_html=True)
-
-    col_i, col_b = st.columns([4, 1])
-    with col_i:
-        question = st.text_input("", key="qa_input", placeholder="输入你的学习疑问...",
-            label_visibility="collapsed")
-    with col_b:
+    from design_system import render_voice_input
+    question = render_voice_input("qa_input", "输入你的学习疑问...")
+    
+    col_b = st.columns([1])
+    with col_b[0]:
         ask_clicked = st.button("发送", key="qa_submit", use_container_width=True)
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
     # ── Quick Questions ──
     st.markdown('<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">', unsafe_allow_html=True)
