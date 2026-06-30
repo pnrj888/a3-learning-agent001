@@ -4,7 +4,7 @@
 import streamlit as st
 import pandas as pd
 import time
-from design_system import ColorTokens, render_student_sidebar, LIGHT_THEME_RESET, render_section_header
+from design_system import ColorTokens, render_student_sidebar, LIGHT_THEME_RESET, render_section_header, render_stat_grid
 
 def render_student_dashboard_page():
     st.markdown(LIGHT_THEME_RESET, unsafe_allow_html=True)
@@ -37,15 +37,7 @@ def render_student_dashboard_page():
         {"value": "12", "label": "已生成资源"},
         {"value": "3", "label": "薄弱知识点"},
     ]
-    cols = st.columns(4)
-    for i, stat in enumerate(stats):
-        with cols[i]:
-            st.markdown(f"""
-            <div style="background:white;border-radius:12px;padding:14px;border:1px solid {ColorTokens.CARD_BORDER};text-align:center;">
-                <div style="font-size:22px;font-weight:800;color:{ColorTokens.PRIMARY};margin-bottom:4px;">{stat['value']}</div>
-                <div style="font-size:11px;color:{ColorTokens.LIGHT_GRAY};">{stat['label']}</div>
-            </div>
-            """, unsafe_allow_html=True)
+    render_stat_grid(stats)
 
     col_chart1, col_chart2 = st.columns(2)
     with col_chart1:
@@ -72,27 +64,27 @@ def render_student_dashboard_page():
 
     col_heatmap, col_weak = st.columns(2)
     with col_heatmap:
-        st.markdown(f"""
-        <div style="background:white;border-radius:14px;padding:16px;border:1px solid {ColorTokens.CARD_BORDER};margin-bottom:16px;">
-            <div style="font-size:13px;font-weight:700;color:{ColorTokens.DARK_GRAY};margin-bottom:12px;">🧠 知识掌握热力图</div>
-        """, unsafe_allow_html=True)
-        
+        render_section_header("🧠 知识掌握热力图")
         heatmap_data = [
-            (8, "OSI模型", "#10B981"), (5, "TCP/IP", "#F59E0B"),
-            (9, "UDP", "#10B981"), (2, "拥塞控制", "#EF4444"),
-            (7, "物理层", "#10B981"), (4, "路由算法", "#EF4444"),
-            (6, "子网划分", "#F59E0B"), (3, "网络安全", "#EF4444"),
+            {"level": 8, "name": "OSI模型"}, {"level": 5, "name": "TCP/IP"},
+            {"level": 9, "name": "UDP"}, {"level": 2, "name": "拥塞控制"},
+            {"level": 7, "name": "物理层"}, {"level": 4, "name": "路由算法"},
+            {"level": 6, "name": "子网划分"}, {"level": 3, "name": "网络安全"},
         ]
         
-        for i, (level, name, color) in enumerate(heatmap_data):
+        for item in heatmap_data:
+            level = item['level']
+            if level >= 8: color = '#10B981'
+            elif level >= 6: color = '#34D399'
+            elif level >= 4: color = '#FBBF24'
+            else: color = '#EF4444'
             st.markdown(f"""
             <div style="background:{color}18;border:2px solid {color};border-radius:8px;
                 padding:6px 4px;text-align:center;margin-bottom:4px;">
-                <div style="font-size:8px;color:{ColorTokens.LIGHT_GRAY};">{name[:4]}</div>
+                <div style="font-size:8px;color:{ColorTokens.LIGHT_GRAY};">{item['name'][:4]}</div>
                 <div style="font-size:12px;font-weight:800;color:{color};">{level}</div>
             </div>
             """, unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
 
     with col_weak:
         st.markdown(f"""
@@ -130,11 +122,7 @@ def render_student_dashboard_page():
 
     col_calendar, col_agents = st.columns(2)
     with col_calendar:
-        st.markdown(f"""
-        <div style="background:white;border-radius:14px;padding:16px;border:1px solid {ColorTokens.CARD_BORDER};margin-bottom:16px;">
-            <div style="font-size:13px;font-weight:700;color:{ColorTokens.DARK_GRAY};margin-bottom:12px;">📅 本周打卡</div>
-        """, unsafe_allow_html=True)
-        
+        render_section_header("📅 本周打卡")
         days = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
         hours = [1.5, 2.0, 0.5, 1.0, 2.5, 3.0, 1.5]
         
@@ -147,15 +135,9 @@ def render_student_dashboard_page():
                 <span style="font-size:11px;color:{color};">{status} {hrs}h</span>
             </div>
             """, unsafe_allow_html=True)
-        
-        st.markdown("</div>", unsafe_allow_html=True)
 
     with col_agents:
-        st.markdown(f"""
-        <div style="background:white;border-radius:14px;padding:16px;border:1px solid {ColorTokens.CARD_BORDER};margin-bottom:16px;">
-            <div style="font-size:13px;font-weight:700;color:{ColorTokens.DARK_GRAY};margin-bottom:12px;">🤖 智能体为我做了什么</div>
-        """, unsafe_allow_html=True)
-        
+        render_section_header("🤖 智能体为我做了什么")
         agents = [
             {"name": "ProfileAgent", "count": 3, "color": "#2563EB"},
             {"name": "PlannerAgent", "count": 2, "color": "#10B981"},
@@ -174,13 +156,8 @@ def render_student_dashboard_page():
                 <span style="font-size:12px;font-weight:700;color:{agent['color']};">{agent['count']}</span>
             </div>
             """, unsafe_allow_html=True)
-        
-        st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <div style="background:white;border-radius:14px;padding:16px;border:1px solid {ColorTokens.CARD_BORDER};margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;color:{ColorTokens.DARK_GRAY};margin-bottom:12px;">📄 最近动态</div>
-    """, unsafe_allow_html=True)
+    render_section_header("📄 最近动态")
     
     activities = [
         ("📝", "生成了讲义《TCP/IP协议详解》", "10分钟前"),
@@ -199,5 +176,3 @@ def render_student_dashboard_page():
             </div>
         </div>
         """, unsafe_allow_html=True)
-    
-    st.markdown("</div>", unsafe_allow_html=True)

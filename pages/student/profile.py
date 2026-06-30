@@ -3,22 +3,13 @@
 """
 import streamlit as st
 import time
-from design_system import ColorTokens, render_student_sidebar, LIGHT_THEME_RESET
+from design_system import ColorTokens, render_student_sidebar, LIGHT_THEME_RESET, render_section_header
 
 def render_student_profile_page():
     st.markdown(LIGHT_THEME_RESET, unsafe_allow_html=True)
     render_student_sidebar("profile")
     
-    st.markdown(f"""
-    <div style="background:{ColorTokens.LIGHT_BLUE};border-radius:14px;padding:20px;border:1px solid {ColorTokens.PRIMARY};margin-bottom:20px;">
-        <div style="font-size:16px;font-weight:700;color:{ColorTokens.DARK_GRAY};margin-bottom:8px;">
-            🤖 智能画像采集助手
-        </div>
-        <div style="font-size:12px;color:{ColorTokens.MID_GRAY};line-height:1.6;">
-            我将通过对话方式收集你的学习信息，自动生成6维学生画像。请用自然语言回答即可，无需格式化。
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    render_section_header("🤖 智能画像采集助手", "对话式收集学习信息，自动生成6维学生画像")
 
     if "profile_messages" not in st.session_state:
         st.session_state.profile_messages = [
