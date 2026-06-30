@@ -1,0 +1,35 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+htmlcov/
+.DS_Store
+*.egg-info/
+dist/
+build/
+.env
+*.env
+secrets.toml
+db/*.db
+*.sqlite
+logs/
+rag_module/chroma_db/
+chroma/
+
+# IDE files
+.codebuddy/
+.workbuddy/
+.vscode/
+.idea/
+
+# Vagrant/VirtualBox
+tt/
+.vagrant/
+*.vbox
+*.vbox-prev
+private_key
+
+# HTML templates (Streamlit app doesn't need them)
+*.html
+*.bat
