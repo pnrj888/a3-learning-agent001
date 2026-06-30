@@ -58,9 +58,28 @@ p  {{ font-size: 14px; line-height: 1.7; color: {ColorTokens.MID_GRAY}; }}
 .stApp {{ background: {ColorTokens.BG_WHITE}; }}
 header[data-testid="stHeader"] {{ display: none !important; }}
 button[data-testid="stAppDeployButton"] {{ display: none !important; }}
-section[data-testid="stSidebar"] {{ background: linear-gradient(180deg, {ColorTokens.DARK_GRAY} 0%, #111827 100%) !important; }}
-section[data-testid="stSidebar"] * {{ color: {ColorTokens.BG_WHITE} !important; }}
-section[data-testid="stSidebar"] svg {{ fill: {ColorTokens.BG_WHITE} !important; }}
+section[data-testid="stSidebar"] {{ background: linear-gradient(180deg, #0B1120 0%, #111827 100%) !important; }}
+section[data-testid="stSidebar"] * {{ color: rgba(255,255,255,0.95) !important; }}
+section[data-testid="stSidebar"] svg {{ fill: rgba(255,255,255,0.95) !important; }}
+
+section[data-testid="stSidebar"] button[data-testid="baseButton-secondary"] {{
+    background: rgba(255,255,255,0.08) !important;
+    color: rgba(255,255,255,0.95) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    margin: 4px 0 !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+}}
+section[data-testid="stSidebar"] button[data-testid="baseButton-secondary"]:hover {{
+    background: rgba(255,255,255,0.15) !important;
+    border-color: rgba(255,255,255,0.2) !important;
+}}
+section[data-testid="stSidebar"] button[data-testid="baseButton-secondary"]:active {{
+    background: {ColorTokens.PRIMARY} !important;
+    color: white !important;
+}}
 .stButton > button, .stDownloadButton > button {{ 
     font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px;
     border-radius: 10px !important; border: none; cursor: pointer;
@@ -594,12 +613,11 @@ def render_student_sidebar(current_page: str = "profile"):
         ]
         
         for page_id, name, desc in pages:
-            active = "active" if current_page == page_id else ""
-            st.markdown(f'''
-                <div class="sidebar-nav-item {active}" style="cursor:pointer;">
-                    <span>{name}</span>
-                </div>
-            ''', unsafe_allow_html=True)
+            active = current_page == page_id
+            btn_color = f"background:{ColorTokens.PRIMARY};color:white;" if active else f"background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.1);"
+            if st.sidebar.button(name, key=f"nav_{page_id}", use_container_width=True, help=desc):
+                st.session_state.student_page = page_id
+                st.rerun()
         
         st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
         
