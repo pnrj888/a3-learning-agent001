@@ -795,6 +795,3 @@ def render_voice_input(input_key: str, placeholder: str = "输入内容...") -> 
     
     st.markdown(VOICE_INPUT_JS, unsafe_allow_html=True)
     return st.session_state[input_key]
-        return dt.strftime("%Y-%m-%d %H:%M")
-    except:
-        return iso_str
