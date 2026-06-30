@@ -800,8 +800,7 @@ def render_student_dashboard_page():
             "类型": ["课程讲义", "习题题库", "思维导图", "拓展阅读", "学习路径"],
             "数量": [4, 3, 2, 2, 1],
         }
-        st.bar_chart(res_data, x="类型", y="数量",
-            color=["#60A5FA", "#34D399", "#A78BFA", "#FBBF24", "#EC4899"])
+        st.bar_chart(res_data, x="类型", y="数量", color="#3B82F6")
 
     # ── Knowledge Heatmap + Weak Points (左右分栏) ──
     col_hm, col_wp = st.columns([1.2, 1])
