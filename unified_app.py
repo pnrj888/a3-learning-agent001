@@ -2398,11 +2398,11 @@ def render_qa_page():
     st.markdown('</div>', unsafe_allow_html=True)
 
     # ── Bottom Input Bar ──
-    from design_system import render_voice_input
-    question = render_voice_input("qa_input", "输入你的学习疑问...")
-    
-    col_b = st.columns([1])
-    with col_b[0]:
+    col_i, col_b = st.columns([4, 1])
+    with col_i:
+        question = st.text_input("", key="qa_input", placeholder="输入你的学习疑问...",
+            label_visibility="collapsed")
+    with col_b:
         ask_clicked = st.button("发送", key="qa_submit", use_container_width=True)
 
     # ── Quick Questions ──
